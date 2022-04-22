@@ -80,14 +80,16 @@ be interpreted as described in RFC 2119. \[[RFC2119]\]
 
 ### 2. Example JMT
 
-    {"columns": ["name", "age"], "name": "people"}
-        ["Albert", 21]
-        ["Barbara", 45]
+```json
+{"columns": ["name", "age"], "name": "people"}
+    ["Albert", 21]
+    ["Barbara", 45]
 
-    {"columns": ["name", "pet specie", "pet name"], "name": "pets"}
-        ["Albert", "cat", "meow"]
-        ["Albert", "cat", "purr"]
-        ["Barbara", "dog", "woof"]
+{"columns": ["name", "pet specie", "pet name"], "name": "pets"}
+    ["Albert", "cat", "meow"]
+    ["Albert", "cat", "purr"]
+    ["Barbara", "dog", "woof"]
+```
 
 ### 3. Functional Specification
 
