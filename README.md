@@ -3,7 +3,7 @@
 
 | semantic version | updated    | authors          |
 |------------------|------------|------------------|
-| 1.1.0            | 2021-01-14 | Enrico Giampieri |
+| 1.1.1            | 2022-04-22 | Enrico Giampieri |
 
 ## What is JSON Multi-Table (*.jmt)
 
@@ -69,13 +69,13 @@ while processing the data.
 
 #### 1.1 About
 The proposal aim to define a way to exploit the ndjson/jsonlines format
-to represents multiple tabular databasets in a single text file 
+to represents multiple tabular databasets in a single text file
 in a human readable format.
 
 
 #### 1.2 Terminology
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", 
-"SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to 
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
+"SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to
 be interpreted as described in RFC 2119. \[[RFC2119]\]
 
 ### 2. Example JMT
@@ -92,9 +92,9 @@ be interpreted as described in RFC 2119. \[[RFC2119]\]
 
 #### 3.1 Serialization
 
-Each JSON text MUST conform to the \[[RFC7159]\] standard and MUST be written 
+Each JSON text MUST conform to the \[[RFC7159]\] standard and MUST be written
 to the stream followed by the newline character `\n` (0x0A).
-The newline character MAY be preceded by a carriage return `\r` (0x0D). 
+The newline character MAY be preceded by a carriage return `\r` (0x0D).
 The JSON texts MUST NOT contain newlines or carriage returns.
 
 All serialized data MUST use the UTF8 encoding.
@@ -123,8 +123,8 @@ All serialized data MUST use the UTF8 encoding.
 
 #### 3.2 Parsing
 
-The parser MUST accept newline as line delimiter `\n` (0x0A) as well as 
-carriage return and newline `\r\n` (0x0D0A). 
+The parser MUST accept newline as line delimiter `\n` (0x0A) as well as
+carriage return and newline `\r\n` (0x0D0A).
 
 Whitelines in the line, before or after the JSON structure, should be ignored.
 
@@ -133,10 +133,10 @@ The parser MUST ignore empty lines, e.g. `\n\n`.
 
 #### 3.3 MediaType and File Extensions
 
-The MediaType \[[RFC4288]\] for Newline Delimited JSON 
+The MediaType \[[RFC4288]\] for Newline Delimited JSON
 SHOULD be _application/x-jmt_.
 
-When saved to a file, the file extension SHOULD be _.ndjson_.
+When saved to a file, the file extension SHOULD be _.jmt_.
 
 ### 4. Example of Parsing
 
@@ -202,7 +202,7 @@ that returns:
 
 ### 5. Copyright
 
-This specification is copyrighted by the authors named in section 4.1. 
+This specification is copyrighted by the authors named in section 5.1.
 It is free to use for any purposes commercial or non-commercial.
 
 #### 5.1 Authors
@@ -277,7 +277,7 @@ As the goal of this format is to have a human friendly, long term storage, this 
 {"name": "client_info", "columns": ["client_ID", "proper_name"]}
     [234, "Graham"]
     [523, "Dorothy"]
-    
+
 "corrections on the various tables with an EAV approach"
 {"name": "edit_history", "columns": ["table_name", "tuple_key", "column_name", "new_value", "reason"]}
     ["client_info", {"client_ID": 523}, "proper_name", "Dorothea", "the first time it was written incorrectly"]
@@ -292,7 +292,7 @@ Basically one can simulate and INI/TOML file.
 {"name": "simulation", "columns": ["parameter_name", "parameter_value"]}
     ["N_particles", 10000]
     ["delta_t", 0.001]
-    
+
     {"name": "simulation/electron", "columns": ["parameter_name", "parameter_value"]}
         ["mass", 1]
         ["charge", 1]
