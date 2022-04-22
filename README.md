@@ -3,7 +3,7 @@
 
 | semantic version | updated    | authors          |
 |------------------|------------|------------------|
-| 1.1.1            | 2022-04-22 | Enrico Giampieri |
+| 1.2.0            | 2022-04-22 | Enrico Giampieri |
 
 ## What is JSON Multi-Table (*.jmt)
 
@@ -206,7 +206,9 @@ that returns:
 ### 5. Copyright
 
 This specification is copyrighted by the authors named in section 5.1.
-It is free to use for any purposes commercial or non-commercial.
+
+This specification is distributed under Attribution-ShareAlike 4.0 International.
+It is free to use for any purposes, commercial or non-commercial.
 
 #### 5.1 Authors
 
