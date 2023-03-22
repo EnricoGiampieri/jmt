@@ -262,6 +262,22 @@ on the example `.jmt` file would return
 {"line number":4,"table header":{"columns":["name","pet specie","pet name"],"name":"pets"}}
 ```
 
+in some cases a simpler output, such a `tsv` table, could be desired.
+It can be obtained, including only the table name, with this command.
+
+```bash
+cat my_data.jmt | \
+    jq --slurp 'to_entries | map(select(.value|type=="object")) | map([.key, .value])' | \
+    jq -cr ".[] | [.[0], .[1].name] | @tsv"
+```
+
+the resulting table would look like this
+
+```
+1       people
+4       pets
+```
+
 ##### splitting the tables contained in the `.jmt` using `csplit`
 
 using the `csplit` program one can divide a `.jmt` file in several files, one for each table.
