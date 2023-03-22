@@ -1,6 +1,5 @@
 # JSON Multi-Table data format - representing relational databases in plain text
 
-
 | semantic version | updated    | authors          |
 |------------------|------------|------------------|
 | 1.2.0            | 2022-04-22 | Enrico Giampieri |
@@ -141,8 +140,70 @@ SHOULD be _application/x-jmt_.
 
 When saved to a file, the file extension SHOULD be _.jmt_.
 
-### 4. Example of Parsing
+### 4. Example of Parsing and Manipulation
 
+#### 4.1 Basic manipulation of a `.jmt` file with command line programs
+
+##### splitting the tables contained in the `.jmt` using `csplit`
+
+using the `csplit` program one can divide a `.jmt` file in several files, one for each table.
+The first generate file (potentially empty) will be for the objects (such as comment strings) appearing before any table and therefore not part of any.
+
+```bash
+csplit my_data.jmt '/^\s*{.*}$/' "{*}" --prefix='split.' --suffix-format='%03d.jmt' --quiet
+```
+
+this command will generate the files `split.000.jmt`, `split.001.jmt`, `split.002.jmt`, and so on.
+`split.000.jmt` will contain the data from the header and can be safely removed
+
+applied to the example `jmt` described above, the file `split.001.jmt` wound contain
+
+```json
+{"columns": ["name", "age"], "name": "people"}
+["Albert", 21]
+["Barbara", 45]
+```
+
+#### converting a single table `.jmt` in a `.tsv` file using `jq`
+
+this conversion assumes that the column names are stored, as recommended, in a `columns` property
+
+```bash
+cat my_table.jmt | \
+    jq -cr 'if (type=="object") then .columns elif (type=="array") then . else empty end|@tsv' > my_table.tsv
+```
+
+applied to the `split.001.jmt` would result in a `.tsv` shaped like this
+
+```
+name    age
+Albert  21
+Barbara 45
+```
+
+#### converting a `.tsv` file in a single table `.jmt` file
+
+converting from a `.tsv` to a single table `.jmt` file can be accomplished in a one liner, but it requires several calls to `jq` for the processing
+
+```bash
+cat my_table.tsv | \
+    jq -crR 'split("\t")' | \
+    jq -c --slurp '[{"columns": .[0], "name": "table name" }] + .[1:]' | \
+    jq -c '.[]' > reconstructed.jmt
+```
+
+notice that we have to explicitely assign a table name to have the resulting file be a valid `.jmt` file
+
+applied to the `.tsv` generated in the previous section, the reconstructed `.jmt` file would look like this:
+```json
+{"columns":["name","age"],"name":"people"}
+["Albert","21"]
+["Barbara","45"]
+```
+
+notice that all the metadata aside of the column names are lost, due to the lack of native metadata storage in the `.tsv` format
+
+#### 4.2 Reading a `.jmt` file with python 3
 A simple parser in python can be implemented in few lines of code:
 
 ```python
