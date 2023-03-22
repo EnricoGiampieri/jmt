@@ -244,6 +244,24 @@ Basically one can simulate and INI/TOML file.
 
 #### Basic manipulation of a `.jmt` file with command line programs
 
+##### extracting the list of the table headers and the line number (0 indexed) using `jq`
+
+using this `jq` oneliner it is possible to extract the objects representing the table headers associated with the line number in which they are defined.
+notice that this approach requires to load the entire file in memory.
+
+```bash
+cat my_data.jmt | \
+    jq --slurp 'to_entries | map(select(.value|type=="object")) | map({"line number":.key, "table header":.value})' | \
+    jq -c ".[]"
+```
+
+on the example `.jmt` file would return
+
+```json
+{"line number":1,"table header":{"columns":["name","age"],"name":"people"}}
+{"line number":4,"table header":{"columns":["name","pet specie","pet name"],"name":"pets"}}
+```
+
 ##### splitting the tables contained in the `.jmt` using `csplit`
 
 using the `csplit` program one can divide a `.jmt` file in several files, one for each table.
