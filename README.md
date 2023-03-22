@@ -278,6 +278,27 @@ the resulting table would look like this
 4       pets
 ```
 
+##### extract table header, position and lenght using `awk`
+
+using `awk` and `tac` (reversing `cat`) one can extract the position of each table header and the number of lines (including the header) that the table is made of
+
+```bash
+paste \
+    <(tac my_data.jmt | awk 'BEGIN {i=0;} {i++;} /^\s*{.*}$/ {print i; i=0}'| tac) \
+    <(cat my_data.jmt | awk '/^\s*{.*}$/{print NR "\t" $0}')
+```
+
+resulting in the following table
+
+```
+3    2    {"columns": ["name", "age"], "name": "people"}
+4    5        {"columns": ["name", "pet specie", "pet name"], "name": "pets"}
+```
+
+* the first column is the number of lines of the table
+* the second column is the starting position of the table
+* the third columns is the header object
+
 ##### splitting the tables contained in the `.jmt` using `csplit`
 
 using the `csplit` program one can divide a `.jmt` file in several files, one for each table.
