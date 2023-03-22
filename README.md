@@ -2,6 +2,7 @@
 
 | semantic version | updated    | authors          |
 |------------------|------------|------------------|
+| 1.2.1            | 2023-03-22 | Enrico Giampieri |
 | 1.2.0            | 2022-04-22 | Enrico Giampieri |
 
 ## What is JSON Multi-Table (*.jmt)
@@ -71,13 +72,12 @@ The proposal aim to define a way to exploit the ndjson/jsonlines format
 to represents multiple tabular databasets in a single text file
 in a human readable format.
 
-
 #### 1.2 Terminology
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
 "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to
 be interpreted as described in RFC 2119. \[[RFC2119]\]
 
-### 2. Example JMT
+### 2. Example of JMT file content
 
 ```json
 {"columns": ["name", "age"], "name": "people"}
@@ -140,9 +140,109 @@ SHOULD be _application/x-jmt_.
 
 When saved to a file, the file extension SHOULD be _.jmt_.
 
-### 4. Example of Parsing and Manipulation
+### 4. Copyright
 
-#### 4.1 Basic manipulation of a `.jmt` file with command line programs
+This specification is copyrighted by the authors named in section 5.1.
+
+This specification is distributed under Attribution-ShareAlike 4.0 International.
+It is free to use for any purposes, commercial or non-commercial.
+
+#### 4.1 Authors
+
+The following authors are responsible for the JSON Multi-Table core-specification:
+
+* Enrico Giampieri
+
+### 5. References
+
+#### 5.1 Normative
+
+[RFC2119]: http://www.ietf.org/rfc/rfc2119.txt "RFC 2119 - Key words for use in RFCs to Indicate Requirement Levels"
+\[RFC2119\]: RFC 2119 - Key words for use in RFCs to Indicate Requirement Levels
+
+[RFC7159]: http://www.ietf.org/rfc/rfc7159.txt "RFC 7159 -  The JavaScript Object Notation (JSON) Data Interchange Format"
+\[RFC7159\]: RFC 7159 -  The JavaScript Object Notation (JSON) Data Interchange Format
+
+[RFC4288]: http://www.ietf.org/rfc/rfc4288.txt "RFC 4288 - Media Type Specifications and Registration Procedures"
+\[RFC4288\]: RFC 4288 - Media Type Specifications and Registration Procedures
+
+## Examples of use
+
+Here we'll show some simple example of use (and abuse) of this format for data storage.
+As the goal of this format is to have a human friendly, long term storage, this examples will focus on metadata storage.
+
+### Metadata collection
+
+```json
+"this is the main table of transactions"
+{"name": "transactions", "columns": ["client_ID", "date", "value"]}
+    [234, "2021-02-01", 0.99]
+    [523, "2021-02-10", 15.99]
+    [234, "2021-02-11", 1.50]
+
+"the following table is metadata about the clients"
+{"name": "client_info", "columns": ["client_ID", "proper_name"]}
+    [234, "Graham"]
+    [523, "Dorothy"]
+```
+
+### Data Dictionary
+
+```json
+"this is the data dictionry"
+{"name": "data_dictionary", "column": ["table_name", "column_name", "data_type"]}
+    ["transactions", "client_ID", "number"]
+    ["transactions", "date", "string"]
+    ["transactions", "value", "number"]
+    ["client_info", "client_ID", "number"]
+    ["client_info", "proper_name", "string"]
+
+"this is the main table of transactions"
+{"name": "transactions", "columns": ["client_ID", "date", "value"]}
+    [234, "2021-02-01", 0.99]
+    [523, "2021-02-10", 15.99]
+    [234, "2021-02-11", 1.50]
+
+"the following table is metadata about the clients"
+{"name": "client_info", "columns": ["client_ID", "proper_name"]}
+    [234, "Graham"]
+    [523, "Dorothy"]
+```
+### Edit history
+
+```json
+"...data omitted..."
+
+"the following table is metadata about the clients"
+{"name": "client_info", "columns": ["client_ID", "proper_name"]}
+    [234, "Graham"]
+    [523, "Dorothy"]
+
+"corrections on the various tables with an EAV approach"
+{"name": "edit_history", "columns": ["table_name", "tuple_key", "column_name", "new_value", "reason"]}
+    ["client_info", {"client_ID": 523}, "proper_name", "Dorothea", "the first time it was written incorrectly"]
+```
+
+### Configuration files
+One can use the table name, being a string, to represents generale, nested structures.
+This can be helped by the white space insensitivity, that can be used to make the relationship between tables more clear.
+Basically one can simulate and INI/TOML file.
+
+```json
+{"name": "simulation", "columns": ["parameter_name", "parameter_value"]}
+    ["N_particles", 10000]
+    ["delta_t", 0.001]
+
+    {"name": "simulation/electron", "columns": ["parameter_name", "parameter_value"]}
+        ["mass", 1]
+        ["charge", 1]
+
+```
+
+
+### Example of Parsing and Manipulation
+
+#### Basic manipulation of a `.jmt` file with command line programs
 
 ##### splitting the tables contained in the `.jmt` using `csplit`
 
@@ -164,7 +264,7 @@ applied to the example `jmt` described above, the file `split.001.jmt` wound con
 ["Barbara", 45]
 ```
 
-#### converting a single table `.jmt` in a `.tsv` file using `jq`
+##### converting a single table `.jmt` in a `.tsv` file using `jq`
 
 this conversion assumes that the column names are stored, as recommended, in a `columns` property
 
@@ -181,7 +281,7 @@ Albert  21
 Barbara 45
 ```
 
-#### converting a `.tsv` file in a single table `.jmt` file
+##### converting a `.tsv` file in a single table `.jmt` file
 
 converting from a `.tsv` to a single table `.jmt` file can be accomplished in a one liner, but it requires several calls to `jq` for the processing
 
@@ -203,7 +303,7 @@ applied to the `.tsv` generated in the previous section, the reconstructed `.jmt
 
 notice that all the metadata aside of the column names are lost, due to the lack of native metadata storage in the `.tsv` format
 
-#### 4.2 Reading a `.jmt` file with python 3
+#### Reading a `.jmt` file with python 3
 A simple parser in python can be implemented in few lines of code:
 
 ```python
@@ -262,105 +362,4 @@ that returns:
          'info': {'columns': ['c', 'd'], 'name': 'bar'}},
  'foo': {'data': [[1, {'a': 2}], [3, {'a': 4}], [5, {'a': 6}]],
          'info': {'columns': ['a', 'b'], 'name': 'foo'}}}
-```
-
-### 5. Copyright
-
-This specification is copyrighted by the authors named in section 5.1.
-
-This specification is distributed under Attribution-ShareAlike 4.0 International.
-It is free to use for any purposes, commercial or non-commercial.
-
-#### 5.1 Authors
-
-The following authors are responsible for the JSON Multi-Table core-specification:
-
-* Enrico Giampieri
-
-### 6. References
-
-#### 6.1 Normative
-
-[RFC2119]: http://www.ietf.org/rfc/rfc2119.txt "RFC 2119 - Key words for use in RFCs to Indicate Requirement Levels"
-\[RFC2119\]: RFC 2119 - Key words for use in RFCs to Indicate Requirement Levels
-
-[RFC7159]: http://www.ietf.org/rfc/rfc7159.txt "RFC 7159 -  The JavaScript Object Notation (JSON) Data Interchange Format"
-\[RFC7159\]: RFC 7159 -  The JavaScript Object Notation (JSON) Data Interchange Format
-
-[RFC4288]: http://www.ietf.org/rfc/rfc4288.txt "RFC 4288 - Media Type Specifications and Registration Procedures"
-\[RFC4288\]: RFC 4288 - Media Type Specifications and Registration Procedures
-
-## Examples of use
-
-Here we'll show some simple example of use (and abuse) of this format for data storage.
-As the goal of this format is to have a human friendly, long term storage, this examples will focus on metadata storage.
-
-### Metadata collection
-
-```json
-"this is the main table of transactions"
-{"name": "transactions", "columns": ["client_ID", "date", "value"]}
-    [234, "2021-02-01", 0.99]
-    [523, "2021-02-10", 15.99]
-    [234, "2021-02-11", 1.50]
-
-"the following table is metadata about the clients"
-{"name": "client_info", "columns": ["client_ID", "proper_name"]}
-    [234, "Graham"]
-    [523, "Dorothy"]
-```
-
-### Data Dictionary
-
-
-```json
-"this is the data dictionry"
-{"name": "data_dictionary", "column": ["table_name", "column_name", "data_type"]}
-    ["transactions", "client_ID", "number"]
-    ["transactions", "date", "string"]
-    ["transactions", "value", "number"]
-    ["client_info", "client_ID", "number"]
-    ["client_info", "proper_name", "string"]
-
-"this is the main table of transactions"
-{"name": "transactions", "columns": ["client_ID", "date", "value"]}
-    [234, "2021-02-01", 0.99]
-    [523, "2021-02-10", 15.99]
-    [234, "2021-02-11", 1.50]
-
-"the following table is metadata about the clients"
-{"name": "client_info", "columns": ["client_ID", "proper_name"]}
-    [234, "Graham"]
-    [523, "Dorothy"]
-```
-### Edit history
-
-
-```json
-"...data omitted..."
-
-"the following table is metadata about the clients"
-{"name": "client_info", "columns": ["client_ID", "proper_name"]}
-    [234, "Graham"]
-    [523, "Dorothy"]
-
-"corrections on the various tables with an EAV approach"
-{"name": "edit_history", "columns": ["table_name", "tuple_key", "column_name", "new_value", "reason"]}
-    ["client_info", {"client_ID": 523}, "proper_name", "Dorothea", "the first time it was written incorrectly"]
-```
-
-### Configuration files
-One can use the table name, being a string, to represents generale, nested structures.
-This can be helped by the white space insensitivity, that can be used to make the relationship between tables more clear.
-Basically one can simulate and INI/TOML file.
-
-```json
-{"name": "simulation", "columns": ["parameter_name", "parameter_value"]}
-    ["N_particles", 10000]
-    ["delta_t", 0.001]
-
-    {"name": "simulation/electron", "columns": ["parameter_name", "parameter_value"]}
-        ["mass", 1]
-        ["charge", 1]
-
 ```
