@@ -122,6 +122,8 @@ All serialized data MUST use the UTF8 encoding.
     - this name/value pair CAN be replaced by a table defining the type and possible values of the various columns of all the tables.
 * it is RECOMMENDED to use whitespaces to indent the arrays, to provide visual clarity to the structures
 * it is RECOMMENDED to use an empty line to visually separate the tables to provide visual clarity
+* it is RECOMMENDED to include a comment string at the beginning of the file referring to the `jmt` specifics, version used for the file, and a link to this document.
+    * the RECOMMENDED comment string is the following: "JSON Multi-Table format - https://github.com/EnricoGiampieri/jmt - version 1.2.1"
 
 #### 3.2 Parsing
 
